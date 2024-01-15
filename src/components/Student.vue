@@ -5,8 +5,6 @@ const state = reactive({
   students: [],
   images: [],
 });
-const students = reactive([]);
-const images = reactive([]);
 
 onMounted(async () => {
   const student_rsp = await fetch(
