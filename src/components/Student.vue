@@ -1,21 +1,28 @@
 <script setup>
-import { reactive, onMounted, computed } from "vue";
+import { reactive, onMounted, computed, ref } from "vue";
+import ModalWindow from "../components/ModalWindow.vue";
 
 const state = reactive({
   students: [],
-  itemPerPage: 20,
-  currentPage: 1,
 });
 
-const currentPageItems = computed(() => {
-  const startIndex = (currentPage.value - 1) * itemsPerPage.value;
-  const endIndex = startIndex + itemsPerPage.value;
-  return state.students.value.slice(startIndex, endIndex);
+const currentPage = ref(1);
+const itemsPerPage = 20;
+
+// 计算当前页的数据
+const currentItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage;
+  const end = start + itemsPerPage;
+  return state.students.slice(start, end);
 });
 
-onMounted(async () => {
+const totalPages = computed(() => {
+  return Math.ceil(state.students.length / itemsPerPage);
+});
+
+const getAllStudents = async () => {
   const student_rsp = await fetch(
-    "https://fakerapi.it/api/v1/persons?_quantity=10"
+    "https://fakerapi.it/api/v1/persons?_quantity=111"
   );
   const students_json = await student_rsp.json();
   const students = students_json.data;
@@ -23,12 +30,35 @@ onMounted(async () => {
   state.students = students.map((item) => {
     return { ...item, image: "https://placekitten.com/160/140" };
   });
-});
+};
+
+const prevPage = () => {
+  if (currentPage.value <= 1) {
+    alert("Not have more students");
+  } else {
+    currentPage.value = currentPage.value - 1;
+  }
+};
+
+const nextPage = () => {
+  if (currentPage.value >= totalPages) {
+    alert("Not have more students");
+  } else {
+    currentPage.value = currentPage.value + 1;
+  }
+};
+
+const deleteStudent = (student) => {
+  var updateStudent = state.students.filter((item) => item.id !== student.id);
+  state.students = updateStudent;
+};
+
+onMounted(getAllStudents);
 </script>
 
 <template>
   <div class="students">
-    <div class="student" v-for="(student, idx) in state.students" :key="idx">
+    <div class="student" v-for="(student, idx) in currentItems" :key="idx">
       <div
         class="student-image"
         :style="{ backgroundImage: 'url(' + student.image + ')' }"
@@ -38,12 +68,13 @@ onMounted(async () => {
       <h4>{{ student.phone }}</h4>
       <div class="button-container">
         <button class="details">Details</button>
-        <button class="delete">Delete</button>
+        <button class="delete" @click="deleteStudent(student)">Delete</button>
       </div>
     </div>
     <div class="buttom-buttons">
-      <button>上一页</button>
-      <button>下一页</button>
+      <button @click="prevPage">上一页</button>
+      <label>{{ currentPage }}/{{ totalPages }}</label>
+      <button @click="nextPage">下一页</button>
     </div>
   </div>
 </template>
@@ -93,6 +124,7 @@ onMounted(async () => {
 
     .button-container {
       display: flex;
+
       margin: 20px;
       button {
         color: #fff;
@@ -125,7 +157,11 @@ onMounted(async () => {
     display: flex;
     justify-content: center; /* 水平居中按钮 */
     margin-bottom: 20px; /* 添加底部间距，根据需要调整 */
-
+    label {
+      height: 10px;
+      padding: 8px 16px;
+      margin-right: 10px;
+    }
     button {
       color: #fff;
       background-color: #007bff;
