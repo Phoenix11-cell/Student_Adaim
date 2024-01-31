@@ -1,6 +1,10 @@
 <script setup>
 import { reactive, onMounted, computed, ref } from "vue";
-import ModalWindow from "../components/ModalWindow.vue";
+import ModalWindow from "../components/modal/ModalWindow.vue";
+import ModalDetail from "../components/modal/ModalDetail.vue";
+import { studentStore } from "../stores/studentStore.js";
+
+const store = studentStore();
 
 const state = reactive({
   students: [],
@@ -58,7 +62,7 @@ onMounted(getAllStudents);
 
 <template>
   <div class="students">
-    <div class="student" v-for="(student, idx) in currentItems" :key="idx">
+    <div class="student" v-for="(student, idx) in store.students" :key="idx">
       <div
         class="student-image"
         :style="{ backgroundImage: 'url(' + student.image + ')' }"
@@ -77,7 +81,9 @@ onMounted(getAllStudents);
       <button @click="nextPage">下一页</button>
     </div>
   </div>
-  <ModalWindow> </ModalWindow>
+  <ModalWindow>
+    <ModalDetail />
+  </ModalWindow>
 </template>
 
 <style lang="scss" scoped>
