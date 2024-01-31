@@ -77,6 +77,7 @@ onMounted(getAllStudents);
       <button @click="nextPage">下一页</button>
     </div>
   </div>
+  <ModalWindow> </ModalWindow>
 </template>
 
 <style lang="scss" scoped>
