@@ -1,9 +1,17 @@
 <script setup>
 import Student from "./components/Student.vue";
+import { studentStore } from "./stores/studentStore.js";
+import ModalWindow from "./components/modal/ModalWindow.vue";
+import ModalDetail from "./components/modal/ModalDetail.vue";
+const store = studentStore();
 </script>
 
 <template>
   <Student />
+
+  <ModalWindow v-if="store.modalIsActivate">
+    <ModalDetail />
+  </ModalWindow>
 </template>
 
 <style scoped>

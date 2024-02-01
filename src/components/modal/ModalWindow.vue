@@ -1,11 +1,15 @@
 <script setup>
 import ModalCloseButton from "./ModalCloseButton.vue";
+import { studentStore } from "../../stores/studentStore";
+const store = studentStore();
 </script>
 
 <template>
   <div class="modal-wrapper" aria-modal="true" role="dialog" tabindex="-1">
     <div class="inner">
-      <ModalCloseButton></ModalCloseButton>
+      <ModalCloseButton
+        @click="store.modalIsActivate = false"
+      ></ModalCloseButton>
       <slot></slot>
     </div>
   </div>

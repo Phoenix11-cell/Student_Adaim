@@ -1,68 +1,16 @@
 <script setup>
-import { reactive, onMounted, computed, ref } from "vue";
-import ModalWindow from "../components/modal/ModalWindow.vue";
-import ModalDetail from "../components/modal/ModalDetail.vue";
 import { studentStore } from "../stores/studentStore.js";
 
 const store = studentStore();
-
-const state = reactive({
-  students: [],
-});
-
-const currentPage = ref(1);
-const itemsPerPage = 20;
-
-// 计算当前页的数据
-const currentItems = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return state.students.slice(start, end);
-});
-
-const totalPages = computed(() => {
-  return Math.ceil(state.students.length / itemsPerPage);
-});
-
-const getAllStudents = async () => {
-  const student_rsp = await fetch(
-    "https://fakerapi.it/api/v1/persons?_quantity=111"
-  );
-  const students_json = await student_rsp.json();
-  const students = students_json.data;
-
-  state.students = students.map((item) => {
-    return { ...item, image: "https://placekitten.com/160/140" };
-  });
-};
-
-const prevPage = () => {
-  if (currentPage.value <= 1) {
-    alert("Not have more students");
-  } else {
-    currentPage.value = currentPage.value - 1;
-  }
-};
-
-const nextPage = () => {
-  if (currentPage.value >= totalPages) {
-    alert("Not have more students");
-  } else {
-    currentPage.value = currentPage.value + 1;
-  }
-};
-
-const deleteStudent = (student) => {
-  var updateStudent = state.students.filter((item) => item.id !== student.id);
-  state.students = updateStudent;
-};
-
-onMounted(getAllStudents);
 </script>
 
 <template>
   <div class="students">
-    <div class="student" v-for="(student, idx) in store.students" :key="idx">
+    <div
+      class="student"
+      v-for="(student, idx) in store.currentItems"
+      :key="idx"
+    >
       <div
         class="student-image"
         :style="{ backgroundImage: 'url(' + student.image + ')' }"
@@ -71,19 +19,20 @@ onMounted(getAllStudents);
       <h4>{{ student.email }}</h4>
       <h4>{{ student.phone }}</h4>
       <div class="button-container">
-        <button class="details">Details</button>
-        <button class="delete" @click="deleteStudent(student)">Delete</button>
+        <button class="details" @click="store.modalIsActivate = true">
+          Details
+        </button>
+        <button class="delete" @click="store.deleteStudent(student)">
+          Delete
+        </button>
       </div>
     </div>
     <div class="buttom-buttons">
-      <button @click="prevPage">上一页</button>
-      <label>{{ currentPage }}/{{ totalPages }}</label>
-      <button @click="nextPage">下一页</button>
+      <button @click="store.prevPage">上一页</button>
+      <label>{{ store.currentPage }}/{{ store.totalPages }}</label>
+      <button @click="store.nextPage">下一页</button>
     </div>
   </div>
-  <ModalWindow>
-    <ModalDetail />
-  </ModalWindow>
 </template>
 
 <style lang="scss" scoped>
