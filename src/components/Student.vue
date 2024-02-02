@@ -1,7 +1,11 @@
 <script setup>
 import { studentStore } from "../stores/studentStore.js";
-
 const store = studentStore();
+
+function detailClick(id) {
+  store.modalIsActivate = true;
+  store.currentStudentId = id;
+}
 </script>
 
 <template>
@@ -15,11 +19,11 @@ const store = studentStore();
         class="student-image"
         :style="{ backgroundImage: 'url(' + student.image + ')' }"
       ></div>
-      <h4>{{ student.firstname + " " + student.lastname }}</h4>
-      <h4>{{ student.email }}</h4>
-      <h4>{{ student.phone }}</h4>
+      <h4>Name:{{ student.firstname + " " + student.lastname }}</h4>
+      <h4>Email:{{ student.email }}</h4>
+      <h4>Phone:{{ student.phone }}</h4>
       <div class="button-container">
-        <button class="details" @click="store.modalIsActivate = true">
+        <button class="details" @click="detailClick(student.id)">
           Details
         </button>
         <button class="delete" @click="store.deleteStudent(student)">

@@ -4,6 +4,7 @@ import { reactive, ref, computed, onMounted } from "vue";
 export const studentStore = defineStore("students", () => {
   // 获取所有学生数据
   let students = ref([]);
+  const currentStudentId = ref(0);
   const getAllStudents = async () => {
     const students_rsp = await fetch(
       "https://fakerapi.it/api/v1/persons?_quantity=111"
@@ -52,8 +53,6 @@ export const studentStore = defineStore("students", () => {
     students.value = updateStudent;
   };
 
-  
-
   return {
     students,
     currentItems,
@@ -63,5 +62,6 @@ export const studentStore = defineStore("students", () => {
     prevPage,
     deleteStudent,
     modalIsActivate,
+    currentStudentId,
   };
 });
